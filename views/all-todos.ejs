@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%-include("includes/head.ejs")%>
+    <link rel="stylesheet" href="/css/todos.css" />
+  </head>
+  <body>
+    <%-include("includes/nav.ejs")%>
+
+    <main>
+      <a href="/sort-first-created">Sort the todos after first created</a>
+      <a href="/sort-last-created">Sort the todos after last created</a>
+
+      <section>
+        <% if (AllTodos.length > 0){ %>
+        <h2>Todos:</h2>
+        <h3>Click on todo to read more</h3>
+        <ol>
+          <% for(let todos of AllTodos) {%>
+
+          <li>
+            <a class="todoList" href="/todo/<%=todos.id%>"
+              ><%=todos.titel%> : <%=todos.date%></a
+            >
+          </li>
+          <% } %>
+        </ol>
+
+        <%} else { %>
+        <h1><a href="/create-todo">Create Your Todos</a></h1>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+section {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.4);
+}
+ul,
+li {
+  font-size: 18pt;
+}
+
+li {
+  border-bottom: 1px solid black;
+  margin: 20px;
+}
+
+li > a {
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+}
+
+.detailContainer {
+}
