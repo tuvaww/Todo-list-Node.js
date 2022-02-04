@@ -14,8 +14,9 @@ app.set("views", "views");
 
 app.get("/", todoController.getStart);
 app.get("/all-todos", todoController.getTodos);
-app.get("/sort-first-created", todoController.sortFtL);
-app.get("/sort-last-created", todoController.sortLtF);
+app.get("/sort-first-created", todoController.getSortFtL);
+app.get("/sort-last-created", todoController.getSortLtF);
+app.get("/sort-done", todoController.getDone);
 app.post("/create-todo", todoController.postCreate);
 
 app.get("/create-todo", todoController.getCreate);

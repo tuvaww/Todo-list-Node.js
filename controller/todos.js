@@ -19,7 +19,7 @@ exports.postCreate = (req, res, next) => {
   const titel = req.body.titel;
   const description = req.body.desc;
 
-  const todo = new Todo(description, titel, null);
+  const todo = new Todo(description, titel, null, null, false);
 
   console.log("new todo", todo);
   todo.save();
@@ -71,8 +71,9 @@ exports.postEditTodo = (req, res, next) => {
   const editedTitel = req.body.titel;
   const editedDesc = req.body.desc;
   const date = req.body.todoDate;
+  const done = req.body.done;
 
-  const editedTodo = new Todo(editedDesc, editedTitel, todoId, date);
+  const editedTodo = new Todo(editedDesc, editedTitel, todoId, date, done);
 
   editedTodo.save();
   res.redirect("/all-todos");
@@ -86,12 +87,21 @@ exports.getDeleteTodo = (req, res, next) => {
   res.redirect("/all-todos");
 };
 
-exports.sortFtL = (req, res, next) => {
+exports.getSortFtL = (req, res, next) => {
   Todo.sortFirstToLast();
   res.redirect("/all-todos");
 };
 
-exports.sortLtF = (req, res, next) => {
+exports.getSortLtF = (req, res, next) => {
   Todo.sortLastToFirst();
+  res.redirect("/all-todos");
+};
+
+exports.getDone = (req, res, next) => {
+  Todo.done(() => {
+    res.render({
+      AllTodos: notDone,
+    });
+  });
   res.redirect("/all-todos");
 };
