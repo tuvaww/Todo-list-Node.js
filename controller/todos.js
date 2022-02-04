@@ -73,7 +73,7 @@ exports.postEditTodo = (req, res, next) => {
   const editedDesc = req.body.desc;
   const date = req.body.todoDate;
   const done = req.body.done;
-  const created = req.body.todoCreated;
+  const created = +req.body.todoCreated;
 
   let parseDone = /true/i.test(done);
   const editedTodo = new Todo(
