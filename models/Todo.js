@@ -20,12 +20,13 @@ const writeToFile = (data) => {
 };
 
 module.exports = class Todo {
-  constructor(desc, titel, id, date, done) {
+  constructor(desc, titel, id, date, done, created) {
     this.description = desc;
     this.titel = titel;
     this.id = id;
     this.date = date;
     this.done = done;
+    this.created = created;
   }
 
   save() {
@@ -42,11 +43,10 @@ module.exports = class Todo {
         const getmonth = newdate.getMonth() + 1;
         const month = "0" + getmonth;
         const year = newdate.getFullYear();
+        const created = newdate.getTime();
 
         this.date = day + "." + month + "." + year;
-        console.log("datum", this.date);
 
-        const created = newdate.getTime();
         this.created = created;
 
         this.id = shortID.generate();
@@ -71,8 +71,6 @@ module.exports = class Todo {
 
   static deleteTodo(id) {
     getAllTodos((todos) => {
-      ///////7
-      const todo = todos.find((t) => t.id === id);
       const editedList = todos.filter((t) => t.id !== id);
       writeToFile(editedList);
     });
@@ -91,20 +89,6 @@ module.exports = class Todo {
       const sorted = todos.sort((a, b) => b.created - a.created);
 
       writeToFile(sorted);
-    });
-  }
-
-  static done() {
-    getAllTodos((todos) => {
-      console.log(
-        "test",
-
-        todos.filter((t) => t.done === false)
-      );
-
-      let notDone = todos.filter((t) => t.done === false);
-
-      return notDone;
     });
   }
 };

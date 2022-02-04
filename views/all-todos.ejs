@@ -8,12 +8,16 @@
     <%-include("includes/nav.ejs")%>
 
     <main>
-      <a href="/sort-first-created">Sort the todos after first created</a>
-      <a href="/sort-last-created">Sort the todos after last created</a>
-      <a href="/sort-done">Sort the done todos</a>
+      <div class="sortNavs">
+        <a href="/sort-first-created">Sort the todos after first created</a>
+        <a href="/sort-last-created">Sort the todos after last created</a>
+        <a href="/sort-done">Only show the done todos</a>
+        <a href="/sort-not-done">Only show the not done todos</a>
+        <a href="/all-todos">Show all todos</a>
+      </div>
 
       <section>
-        <% if (AllTodos.length > 0){ %>
+        <% if (!done) {%> <% if (AllTodos.length > 0){ %>
         <h2>Todos:</h2>
         <h3>Click on todo to read more</h3>
         <ol>
@@ -29,7 +33,21 @@
 
         <%} else { %>
         <h1><a href="/create-todo">Create Your Todos</a></h1>
-        <% } %>
+        <% } %> <% } else {%>
+
+        <h2>Todos:</h2>
+        <h3>Click on todo to read more</h3>
+        <ol>
+          <% for(let todo of AllTodos) {%>
+
+          <li>
+            <a class="todoList" href="/todo/<%=todo.id%>">
+              <%=todo.titel%> : <%=todo.date%></a
+            >
+          </li>
+          <% } %>
+        </ol>
+        <%}%>
       </section>
     </main>
   </body>

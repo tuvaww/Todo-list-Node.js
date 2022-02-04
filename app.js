@@ -16,7 +16,9 @@ app.get("/", todoController.getStart);
 app.get("/all-todos", todoController.getTodos);
 app.get("/sort-first-created", todoController.getSortFtL);
 app.get("/sort-last-created", todoController.getSortLtF);
-app.get("/sort-done", todoController.getDone);
+app.get("/sort-not-done", todoController.getNotDone);
+app.get("/sort-done", todoController.getOnlyDone);
+
 app.post("/create-todo", todoController.postCreate);
 
 app.get("/create-todo", todoController.getCreate);

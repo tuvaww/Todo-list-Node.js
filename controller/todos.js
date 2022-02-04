@@ -19,7 +19,7 @@ exports.postCreate = (req, res, next) => {
   const titel = req.body.titel;
   const description = req.body.desc;
 
-  const todo = new Todo(description, titel, null, null, false);
+  const todo = new Todo(description, titel, null, null, false, null);
 
   console.log("new todo", todo);
   todo.save();
@@ -32,6 +32,7 @@ exports.getTodos = (req, res, next) => {
       pageTitel: "All Todos",
       path: "/all-todos",
       AllTodos: todos,
+      done: false,
     });
   });
 };
@@ -72,8 +73,17 @@ exports.postEditTodo = (req, res, next) => {
   const editedDesc = req.body.desc;
   const date = req.body.todoDate;
   const done = req.body.done;
+  const created = req.body.todoCreated;
 
-  const editedTodo = new Todo(editedDesc, editedTitel, todoId, date, done);
+  let parseDone = /true/i.test(done);
+  const editedTodo = new Todo(
+    editedDesc,
+    editedTitel,
+    todoId,
+    date,
+    parseDone,
+    created
+  );
 
   editedTodo.save();
   res.redirect("/all-todos");
@@ -97,11 +107,28 @@ exports.getSortLtF = (req, res, next) => {
   res.redirect("/all-todos");
 };
 
-exports.getDone = (req, res, next) => {
-  Todo.done(() => {
-    res.render({
-      AllTodos: notDone,
+exports.getNotDone = (req, res, next) => {
+  Todo.fetchAll((todos) => {
+    const todo = todos.filter((t) => t.done === false);
+
+    res.render("all-todos", {
+      pageTitel: "Not done Todos",
+      path: "/all-todos",
+      AllTodos: todo,
+      done: true,
     });
   });
-  res.redirect("/all-todos");
+};
+
+exports.getOnlyDone = (req, res, next) => {
+  Todo.fetchAll((todos) => {
+    const todo = todos.filter((t) => t.done === true);
+
+    res.render("all-todos", {
+      pageTitel: "Done Todos",
+      path: "/all-todos",
+      AllTodos: todo,
+      done: true,
+    });
+  });
 };
