@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%-include("includes/head.ejs")%>
+    <%-include("../includes/head.ejs")%>
     <link rel="stylesheet" href="/css/todos.css" />
   </head>
   <body>
-    <%-include("includes/nav.ejs")%>
+    <%-include("../includes/nav.ejs")%>
 
     <main>
       <div class="sortNavs">
@@ -24,7 +24,7 @@
           <% for(let todos of AllTodos) {%>
 
           <li>
-            <a class="todoList" href="/todo/<%=todos.id%>"
+            <a class="todoList" href="/todo/<%=todos._id%>"
               ><%=todos.titel%> : <%=todos.date%></a
             >
           </li>
@@ -41,7 +41,7 @@
           <% for(let todo of AllTodos) {%>
 
           <li>
-            <a class="todoList" href="/todo/<%=todo.id%>">
+            <a class="todoList" href="/todo/<%=todo._id%>">
               <%=todo.titel%> : <%=todo.date%></a
             >
           </li>

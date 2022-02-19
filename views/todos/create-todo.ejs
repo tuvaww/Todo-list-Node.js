@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <!-- importerar include/layout -->
-    <%-include("includes/head.ejs")%>
+    <%-include("../includes/head.ejs")%>
     <link rel="stylesheet" href="/css/createPage.css" />
   </head>
   <body>
     <!-- importerar include/layout -->
 
-    <%-include("includes/nav.ejs")%>
+    <%-include("../includes/nav.ejs")%>
 
     <main>
       <!-- om editing finns använd url, annars använda annan url -->
@@ -46,7 +46,7 @@
           pattern="[Tt]rue|[Ff]alse"
         />
 
-        <input type="hidden" value="<%=todo.id%>" name="todoId" />
+        <input type="hidden" value="<%=todo._id%>" name="todoId" />
         <input type="hidden" value="<%=todo.date%>" name="todoDate" />
         <input type="hidden" value="<%=todo.created%>" name="todoCreated" />
 

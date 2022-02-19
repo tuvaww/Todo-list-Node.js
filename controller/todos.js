@@ -1,69 +1,61 @@
 const Todo = require("../models/Todo");
+const { ObjectId } = require("mongodb");
 
 exports.getStart = (req, res, next) => {
   res.render("index", {
-    path: "/",
     pageTitel: "Start Page",
   });
 };
 
 exports.getCreate = (req, res, next) => {
-  res.render("create-todo", {
-    path: "/create-todo",
+  res.render("todos/create-todo", {
     pageTitel: "Create Todo",
     editing: false,
   });
 };
 
-exports.postCreate = (req, res, next) => {
+exports.postCreate = async (req, res, next) => {
   const titel = req.body.titel;
   const description = req.body.desc;
 
   const todo = new Todo(description, titel, null, null, false, null);
 
-  console.log("new todo", todo);
   todo.save();
+
   res.redirect("/all-todos");
 };
 
-exports.getTodos = (req, res, next) => {
-  Todo.fetchAll((todos) => {
-    res.render("all-todos", {
-      pageTitel: "All Todos",
-      path: "/all-todos",
-      AllTodos: todos,
-      done: false,
-    });
+exports.getTodos = async (req, res, next) => {
+  const todos = await Todo.fetchAll();
+  res.render("todos/all-todos", {
+    pageTitel: "All Todos",
+    AllTodos: todos,
+    done: false,
   });
 };
 
-exports.getDetails = (req, res, next) => {
-  const todoID = req.params.id;
-  Todo.findById(todoID, (todo) => {
-    res.render("todo-details", {
-      pageTitel: "Todo Details",
-      todo: todo,
-      path: "/all-todos",
-    });
+exports.getDetails = async (req, res, next) => {
+  const todoID = ObjectId(req.params.id);
+  const todo = await Todo.findById(todoID);
+  res.render("todos/todo-details", {
+    pageTitel: "Todo Details",
+    todo: todo,
   });
 };
 
-exports.getEdit = (req, res, next) => {
+exports.getEdit = async (req, res, next) => {
   const editMode = req.query.edit;
 
   if (!editMode) {
     return res.redirect("/create-todo");
   }
 
-  const todoID = req.params.id;
-
-  Todo.findById(todoID, (todo) => {
-    res.render("create-todo", {
-      pageTitel: "Edit todo",
-      path: "/edit-todo",
-      editing: editMode,
-      todo: todo,
-    });
+  const todoID = ObjectId(req.params.id);
+  const todo = await Todo.findById(todoID);
+  res.render("todos/create-todo", {
+    pageTitel: "Edit todo",
+    editing: editMode,
+    todo: todo,
   });
 };
 
@@ -90,45 +82,46 @@ exports.postEditTodo = (req, res, next) => {
 };
 
 exports.getDeleteTodo = (req, res, next) => {
-  const todoId = req.params.id;
+  const todoId = ObjectId(req.params.id);
 
   Todo.deleteTodo(todoId);
 
   res.redirect("/all-todos");
 };
 
-exports.getSortFtL = (req, res, next) => {
-  Todo.sortFirstToLast();
-  res.redirect("/all-todos");
-};
-
-exports.getSortLtF = (req, res, next) => {
-  Todo.sortLastToFirst();
-  res.redirect("/all-todos");
-};
-
-exports.getNotDone = (req, res, next) => {
-  Todo.fetchAll((todos) => {
-    const todo = todos.filter((t) => t.done === false);
-
-    res.render("all-todos", {
-      pageTitel: "Not done Todos",
-      path: "/all-todos",
-      AllTodos: todo,
-      done: true,
-    });
+exports.getSortFtL = async (req, res, next) => {
+  const todos = await Todo.sortFirstToLast();
+  console.log("sort", todos);
+  res.render("todos/all-todos", {
+    pageTitel: "All Todos",
+    AllTodos: todos,
+    done: false,
   });
 };
 
-exports.getOnlyDone = (req, res, next) => {
-  Todo.fetchAll((todos) => {
-    const todo = todos.filter((t) => t.done === true);
+exports.getSortLtF = async (req, res, next) => {
+  const todos = await Todo.sortLastToFirst();
+  res.render("todos/all-todos", {
+    pageTitel: "All Todos",
+    AllTodos: todos,
+    done: false,
+  });
+};
 
-    res.render("all-todos", {
-      pageTitel: "Done Todos",
-      path: "/all-todos",
-      AllTodos: todo,
-      done: true,
-    });
+exports.getNotDone = async (req, res, next) => {
+  const todos = await Todo.sortNotDone();
+  res.render("todos/all-todos", {
+    pageTitel: "Not done Todos",
+    AllTodos: todos,
+    done: true,
+  });
+};
+
+exports.getOnlyDone = async (req, res, next) => {
+  const todos = await Todo.sortDone();
+  res.render("todos/all-todos", {
+    pageTitel: "Done Todos",
+    AllTodos: todos,
+    done: true,
   });
 };

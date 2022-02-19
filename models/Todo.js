@@ -1,94 +1,80 @@
-const path = require("path");
-const rootDir = require("../helpers/path");
-const fs = require("fs");
-const shortID = require("short-id");
-const p = path.join(rootDir, "data", "savedTodos.json");
-
-const getAllTodos = (cb) => {
-  fs.readFile(p, (err, fileData) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileData));
-    }
-  });
-};
-const writeToFile = (data) => {
-  fs.writeFile(p, JSON.stringify(data), (err) => {
-    console.log(err);
-  });
-};
+const db = require("../utils/database");
+const { ObjectId } = require("mongodb");
 
 module.exports = class Todo {
   constructor(desc, titel, id, date, done, created) {
     this.description = desc;
     this.titel = titel;
-    this.id = id;
+    this._id = id ? ObjectId(id) : null;
     this.date = date;
     this.done = done;
     this.created = created;
   }
 
-  save() {
-    getAllTodos((todos) => {
-      if (this.id) {
-        const originalTodoIndex = todos.findIndex((t) => t.id === this.id);
+  async save() {
+    const collection = await db.getTodoCollection();
+    if (this._id) {
+      await collection.updateOne({ _id: this._id }, { $set: this });
+    } else if (!this._id) {
+      let newdate = new Date();
+      const day = ("0" + newdate.getDate()).slice(-2);
+      const getmonth = newdate.getMonth() + 1;
+      const month = "0" + getmonth;
+      const year = newdate.getFullYear();
+      const created = newdate.getTime();
 
-        const editedTodo = [...todos];
-        editedTodo[originalTodoIndex] = this;
-        writeToFile(editedTodo);
-      } else {
-        let newdate = new Date();
-        const day = ("0" + newdate.getDate()).slice(-2);
-        const getmonth = newdate.getMonth() + 1;
-        const month = "0" + getmonth;
-        const year = newdate.getFullYear();
-        const created = newdate.getTime();
+      this.date = day + "." + month + "." + year;
+      this.created = created;
 
-        this.date = day + "." + month + "." + year;
-
-        this.created = created;
-
-        this.id = shortID.generate();
-
-        console.log("bör vara id", this.id);
-        todos.push(this);
-        writeToFile(todos);
-      }
-    });
+      await collection.insertOne(this);
+    }
   }
 
-  static fetchAll(cb) {
-    getAllTodos(cb);
+  static async fetchAll() {
+    const collection = await db.getTodoCollection();
+    const getAllT = await collection.find().toArray();
+    return getAllT;
   }
 
-  static findById(id, cb) {
-    getAllTodos((todos) => {
-      const todo = todos.find((t) => t.id === id);
-      cb(todo);
-    });
+  static async findById(id) {
+    const collection = await db.getTodoCollection();
+    const todo = await collection.findOne({ _id: id });
+
+    return todo;
   }
 
-  static deleteTodo(id) {
-    getAllTodos((todos) => {
-      const editedList = todos.filter((t) => t.id !== id);
-      writeToFile(editedList);
-    });
+  static async deleteTodo(id) {
+    const collection = await db.getTodoCollection();
+    await collection.deleteOne({ _id: id });
   }
 
-  static sortFirstToLast() {
-    getAllTodos((todos) => {
-      const sorted = todos.sort((a, b) => a.created - b.created);
-
-      writeToFile(sorted);
-    });
+  static async sortFirstToLast() {
+    const collection = await db.getTodoCollection();
+    const todos = await collection.find().toArray();
+    const sorted = todos.sort((a, b) => a.created - b.created);
+    return sorted;
   }
 
-  static sortLastToFirst() {
-    getAllTodos((todos) => {
-      const sorted = todos.sort((a, b) => b.created - a.created);
+  static async sortLastToFirst() {
+    const collection = await db.getTodoCollection();
+    const todos = await collection.find().toArray();
+    const sorted = todos.sort((a, b) => b.created - a.created);
 
-      writeToFile(sorted);
-    });
+    return sorted;
+  }
+
+  static async sortDone() {
+    const collection = await db.getTodoCollection();
+    const todos = await collection.find().toArray();
+    const doneTodos = todos.filter((t) => t.done === true);
+
+    return doneTodos;
+  }
+  static async sortNotDone() {
+    const collection = await db.getTodoCollection();
+    const todos = await collection.find().toArray();
+    const notDoneTodos = todos.filter((t) => t.done === false);
+
+    return notDoneTodos;
   }
 };
